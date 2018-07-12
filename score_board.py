@@ -10,10 +10,10 @@ class ScoreBoard():
         self.score_font = pygame.font.SysFont(None, 48)
         self.update()
 
-    def score_increasing(self, alien):
-        self.score += alien.score_value
-
-    def update(self):
+    def update(self, alien = None):
+        if alien != None:
+            self.score += alien.score_value
+        
         self.score_image = self.score_font.render(
                 str(int(self.score)), True,
                 self.score_colour, self.settings.bg_colour)

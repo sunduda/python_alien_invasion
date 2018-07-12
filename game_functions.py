@@ -95,8 +95,8 @@ def bullet_hit(bullet, aliens, player_score):
         if bullet.rect.top < alien.rect.bottom and \
                 bullet.rect.left < alien.rect.right and \
                 bullet.rect.right > alien.rect.left:
-            hit_alien = aliens.remove(alien)
-            player_score.update(hit_alien)
+            player_score.update(alien)
+            aliens.remove(alien)
             return True
             break
 

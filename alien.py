@@ -21,6 +21,9 @@ class Alien(Sprite):
         self.x = float(self.rect.x)
         self.y = float(self.rect.y)
 
+        # By the beginning, every alien is the same score
+        self.score_value = 1
+
     def update(self):
         # Aliens move downwards as a row.
         x_factor = self.settings.fleet_speed_factor

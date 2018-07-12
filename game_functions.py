@@ -32,7 +32,7 @@ def check_events(ship):
         if event.type == pygame.KEYUP:
             check_keyup_events(event, ship)
                 
-def update_screen(game_settings, screen, ship, bullets, aliens):
+def update_screen(game_settings, screen, ship, bullets, aliens, player_score):
     # Fill the background
     screen.fill(game_settings.bg_colour)
     for bullet in bullets.sprites():
@@ -40,7 +40,7 @@ def update_screen(game_settings, screen, ship, bullets, aliens):
         bullet.draw_bullet()
         # When a bullet hits an alien, remove both the bullet and the alien
         # from their groups respectively
-        if bullet_hit(bullet, aliens):
+        if bullet_hit(bullet, aliens, player_score):
             bullets.remove(bullet)
 
         # If a bullet is out of the screen, remove it from the group
@@ -51,6 +51,8 @@ def update_screen(game_settings, screen, ship, bullets, aliens):
     aliens.update()
     for alien in aliens.sprites():
         alien.blitme()
+
+    player_score.blitme()
     # Display the screen
     pygame.display.flip()
 
@@ -88,12 +90,13 @@ def fleet_drop(game_settings, aliens):
         alien.y += alien.rect.height*game_settings.fleet_drop_factor
         alien.rect.y = alien.y
 
-def bullet_hit(bullet, aliens):
+def bullet_hit(bullet, aliens, player_score):
     for alien in aliens.sprites():
         if bullet.rect.top < alien.rect.bottom and \
                 bullet.rect.left < alien.rect.right and \
                 bullet.rect.right > alien.rect.left:
-            aliens.remove(alien)
+            hit_alien = aliens.remove(alien)
+            player_score.update(hit_alien)
             return True
             break
 

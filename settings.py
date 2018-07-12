@@ -16,6 +16,6 @@ class Settings():
         self.ammo_capacity = 20
         self.ammo_amount = 10
         self.reload_factor = 0.1
-        self.fleet_speed_factor = 0.01
+        self.fleet_speed_factor = 001.0
         self.fleet_drop_factor = 0.5
         self.fleet_moving_direction = 1

@@ -32,7 +32,7 @@ def check_events(ship):
         if event.type == pygame.KEYUP:
             check_keyup_events(event, ship)
                 
-def update_screen(game_settings, screen, ship, bullets, aliens):
+def update_screen(game_settings, screen, ship, bullets, aliens, player_score):
     # Fill the background
     screen.fill(game_settings.bg_colour)
     for bullet in bullets.sprites():
@@ -40,7 +40,7 @@ def update_screen(game_settings, screen, ship, bullets, aliens):
         bullet.draw_bullet()
         # When a bullet hits an alien, remove both the bullet and the alien
         # from their groups respectively
-        if bullet_hit(bullet, aliens):
+        if bullet_hit(bullet, aliens, player_score):
             bullets.remove(bullet)
 
         # If a bullet is out of the screen, remove it from the group
@@ -51,7 +51,9 @@ def update_screen(game_settings, screen, ship, bullets, aliens):
     aliens.update()
     for alien in aliens.sprites():
         alien.blitme()
-    
+
+    player_score.blitme()
+
     # Display the screen
     pygame.display.flip()
 
@@ -89,11 +91,12 @@ def fleet_drop(game_settings, aliens):
         alien.y += alien.rect.height*game_settings.fleet_drop_factor
         alien.rect.y = alien.y
 
-def bullet_hit(bullet, aliens):
+def bullet_hit(bullet, aliens, player_score):
     for alien in aliens.sprites():
         if bullet.rect.top < alien.rect.bottom and \
                 bullet.rect.left < alien.rect.right and \
                 bullet.rect.right > alien.rect.left:
+            player_score.update(alien)
             aliens.remove(alien)
             return True
             break
@@ -103,29 +106,40 @@ def bullet_hit(bullet, aliens):
 def check_aliens_win(screen, ship, aliens):
     """ Check if any alien reaches the bottom of the screen, or bumps into the
         ship """
-    invasion_succeed = False
-    hero_died = False
+    game_runs = {'run_flag':True, 'game_over_message':""}
     for alien in aliens.sprites():
         if alien.rect.bottom >= screen.get_rect().bottom and \
                 (alien.rect.left >= ship.rect.right or \
                 alien.rect.right <= ship.rect.left):
-            invasion_succeed = True
+            game_runs['run_flag'] = False
+            game_runs['game_over_message'] = \
+                    "You failed to protect the Earth from alien invasion"
             break
         elif alien.rect.bottom >= ship.rect.top and \
                 alien.rect.left < ship.rect.right and \
                 alien.rect.right > ship.rect.left:
-            hero_died = True
+            game_runs['run_flag'] = False
+            game_runs['game_over_message'] = \
+                    "You died and the aliens now take over the Earth"
             break
 
-    if invasion_succeed or hero_died:
-        return False
+    return game_runs
 
-def game_over(game_settings, screen):
-    gg_colour = (255, 255, 0)
+def game_over(game_settings, screen, game_over_message):
+    gg_colour = (255, 0, 0)
     gg_font = pygame.font.SysFont(None, 128)
+    gom_font = pygame.font.SysFont(None, 64)
     gg_image = gg_font.render(
             "Game Over!", True,
-                gg_colour, game_settings.bg_colour)
+            gg_colour, game_settings.bg_colour)
+    gom_image = gom_font.render(
+            game_over_message, True,
+            gg_colour, game_settings.bg_colour)
     gg_rect = gg_image.get_rect()
+    gom_rect = gom_image.get_rect()
     gg_rect.center = screen.get_rect().center
+    gg_rect.y -= gg_rect.height / 2
+    gom_rect.center = screen.get_rect().center
+    gom_rect.y += gom_rect.height /2
     screen.blit(gg_image, gg_rect)
+    screen.blit(gom_image, gom_rect)

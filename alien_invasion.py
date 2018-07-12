@@ -15,19 +15,26 @@ def run_game():
     screen = pygame.display.set_mode(
         (game_settings.screen_width, game_settings.screen_height))
     pygame.display.set_caption("Alien Invasion")
+    game_over_message = ""
 
     ship = Ship(game_settings, screen)
     player_score = ScoreBoard(game_settings, screen)
     bullets = Group()
     aliens = Group()
     gf.spawn_alien_fleet(game_settings, screen, aliens)
+    game_runs = {'run_flag':True, 'game_over_message':""}
     # The main game process
-    while True:
+    while game_runs['run_flag']:
             gf.check_events(ship)
             ship.bullet_firing(bullets)
             ship.update()
             bullets.update()
-            
+            game_runs = gf.check_aliens_win(screen, ship, aliens)
             gf.update_screen(game_settings, screen, ship, bullets, aliens, player_score)
 
+    # If any alien succeeds in invasion, game over
+    gf.game_over(game_settings, screen, game_runs['game_over_message'])
+    pygame.display.flip()
+
+#------------------- Main process -----------------------#
 run_game()

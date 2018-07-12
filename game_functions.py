@@ -53,6 +53,7 @@ def update_screen(game_settings, screen, ship, bullets, aliens, player_score):
         alien.blitme()
 
     player_score.blitme()
+
     # Display the screen
     pygame.display.flip()
 
@@ -101,3 +102,44 @@ def bullet_hit(bullet, aliens, player_score):
             break
 
     return False
+
+def check_aliens_win(screen, ship, aliens):
+    """ Check if any alien reaches the bottom of the screen, or bumps into the
+        ship """
+    game_runs = {'run_flag':True, 'game_over_message':""}
+    for alien in aliens.sprites():
+        if alien.rect.bottom >= screen.get_rect().bottom and \
+                (alien.rect.left >= ship.rect.right or \
+                alien.rect.right <= ship.rect.left):
+            game_runs['run_flag'] = False
+            game_runs['game_over_message'] = \
+                    "You failed to protect the Earth from alien invasion"
+            break
+        elif alien.rect.bottom >= ship.rect.top and \
+                alien.rect.left < ship.rect.right and \
+                alien.rect.right > ship.rect.left:
+            game_runs['run_flag'] = False
+            game_runs['game_over_message'] = \
+                    "You died and the aliens now take over the Earth"
+            break
+
+    return game_runs
+
+def game_over(game_settings, screen, game_over_message):
+    gg_colour = (255, 0, 0)
+    gg_font = pygame.font.SysFont(None, 128)
+    gom_font = pygame.font.SysFont(None, 64)
+    gg_image = gg_font.render(
+            "Game Over!", True,
+            gg_colour, game_settings.bg_colour)
+    gom_image = gom_font.render(
+            game_over_message, True,
+            gg_colour, game_settings.bg_colour)
+    gg_rect = gg_image.get_rect()
+    gom_rect = gom_image.get_rect()
+    gg_rect.center = screen.get_rect().center
+    gg_rect.y -= gg_rect.height / 2
+    gom_rect.center = screen.get_rect().center
+    gom_rect.y += gom_rect.height /2
+    screen.blit(gg_image, gg_rect)
+    screen.blit(gom_image, gom_rect)

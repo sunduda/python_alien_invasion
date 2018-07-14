@@ -47,11 +47,10 @@ def check_events(stats, play_button, ship):
         if event.type == pygame.KEYDOWN:
             check_keydown_events(event, ship)
         if event.type == pygame.KEYUP:
-            if stats.undefeated:
-                check_keyup_events(event, ship)
-            else:
+            if not stats.undefeated:
                 stats.game_active = False
                 stats.undefeated = True
+            check_keyup_events(event, ship)
         if event.type == pygame.MOUSEBUTTONUP:
             mouse_x, mouse_y = pygame.mouse.get_pos()
             play_button.check_clicked(stats, mouse_x, mouse_y)

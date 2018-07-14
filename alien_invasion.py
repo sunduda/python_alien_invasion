@@ -24,19 +24,21 @@ def run_game():
     bullets = Group()
     aliens = Group()
     player_score = ScoreBoard(game_settings, screen)
-    stats = GameStats(game_settings, screen, ship, aliens)
+    stats = GameStats(game_settings, screen, ship, aliens, bullets, player_score)
     
     # The main game process
     while True:
         gf.check_events(stats, play_button, ship)
         
         if stats.game_active:
+            pygame.mouse.set_visible(False)
             ship.update()
             ship.bullet_firing(game_settings, bullets)
             stats.check_aliens_win(game_settings, ship, aliens)
             gf.update_screen(game_settings, screen, ship, bullets, aliens, 
                 player_score)
         else:
+            pygame.mouse.set_visible(True)
             gf.display_title(game_settings, screen, play_button)
         
         
@@ -46,6 +48,7 @@ def run_game():
             pygame.display.flip()
             while stats.game_active:
                 gf.check_events(stats, play_button, ship)
+                stats.reset_stats(game_settings, ship, aliens, bullets, player_score)
 
 #------------------- Main process -----------------------#
 run_game()

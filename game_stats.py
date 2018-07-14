@@ -5,18 +5,24 @@ from alien import Alien
 
 class GameStats():
     """ """
-    def __init__(self, game_settings, screen, ship, aliens):
+    def __init__(self, game_settings, screen, ship, aliens, bullets, player_score):
         self.screen = screen
         self.ship_limit = game_settings.ship_limit
-        self.reset_stats(game_settings, ship, aliens)
+        self.reset_stats(game_settings, ship, aliens, bullets, player_score)
         self.game_active = False
         self.undefeated = True
         self.game_over_message = \
                 "Something went wrong, you are not defeated yet"
 
-    def reset_stats(self, game_settings, ship, aliens):
+    def reset_stats(self, game_settings, ship, aliens, bullets, player_score):
         self.ship_remains = self.ship_limit
+        ship.ship_reset(game_settings)
+        player_score.score_reset()
+        aliens.empty()
+        bullets.empty()
         self.spawn_alien_fleet(game_settings, aliens)
+        self.game_over_message = \
+                "Something went wrong, you are not defeated yet"
         
     def lose_a_ship(self, game_settings, ship, aliens):
         ship.rect.bottom = self.screen.get_rect().bottom
@@ -85,7 +91,7 @@ class GameStats():
         gg_colour = (255, 0, 0)
         gom_colour = (200, 0, 100)
         gg_font = pygame.font.SysFont(None, 64)
-        gom_font = pygame.font.SysFont(None, 48)
+        gom_font = pygame.font.SysFont(None, 32)
         gg_image = gg_font.render(
                 "Game Over!", True,
                 gg_colour, game_settings.bg_colour)

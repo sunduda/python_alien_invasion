@@ -5,11 +5,14 @@ class ScoreBoard():
     def __init__(self, game_settings, screen):
         self.settings = game_settings
         self.screen = screen
-        self.score = 0
         self.score_colour = (30, 30, 30)
         self.score_font = pygame.font.SysFont(None, 48)
+        self.score_reset()
         self.update()
 
+    def score_reset(self):
+        self.score = 0
+        
     def update(self, alien = None):
         if alien != None:
             self.score += alien.score_value

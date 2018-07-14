@@ -4,11 +4,9 @@ from pygame.sprite import Sprite
 class Alien(Sprite):
     """ Define the enemy aliens """
     def __init__(self, game_settings, screen):
-        # Alien initialisation
         super().__init__()
-        self.settings = game_settings
         self.screen = screen
-
+        self.settings = game_settings
         # Load alien image
         self.image = pygame.image.load('images/alien.bmp')
         self.rect = self.image.get_rect()
@@ -25,9 +23,9 @@ class Alien(Sprite):
         self.score_value = 1
 
     def update(self):
-        # Aliens move downwards as a row.
         x_factor = self.settings.fleet_speed_factor
         x_direction = self.settings.fleet_moving_direction
+        # Aliens move downwards as a row.
         self.x += self.rect.width*x_factor*x_direction;
         self.rect.x = self.x
 

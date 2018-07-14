@@ -1,4 +1,5 @@
 import pygame
+import time
 
 from alien import Alien
 
@@ -17,12 +18,16 @@ class GameStats():
         self.spawn_alien_fleet(game_settings, aliens)
         
     def lose_a_ship(self, game_settings, ship, aliens):
-        # pause(0.5)
         ship.rect.bottom = self.screen.get_rect().bottom
         ship.rect.centerx = self.screen.get_rect().centerx
+        aliens_pos = []
         for alien in aliens.sprites():
-            aliens.remove(alien)
-        self.spawn_alien_fleet(game_settings, aliens)
+            aliens_pos.append(alien.y)
+        y_dist = min(aliens_pos) - alien.rect.height/2
+        for alien in aliens.sprites():
+            alien.y -= y_dist
+            alien.rect.y = alien.y
+        time.sleep(0.2)
 
     def spawn_alien_fleet(self, game_settings, aliens):
         # Create a fleet of aliens

@@ -27,11 +27,13 @@ class Bullet(Sprite):
 
     def hit_the_target(self, aliens, player_score):
         # Check if the bullet hits (an) alien(s)
+        bullet_consumed = False
         for alien in aliens.sprites():
-            if self.rect.top < alien.rect.bottom and \
-                    self.rect.left < alien.rect.right and \
-                    self.rect.right > alien.rect.left:
+            if (self.rect.top < alien.rect.bottom and \
+                    self.rect.bottom > alien.rect.bottom) and \
+                    (self.rect.left < alien.rect.right and \
+                    self.rect.right > alien.rect.left):
                 player_score.update(alien)
                 aliens.remove(alien)
-                return True
-        return False
+                bullet_consumed = True
+        return bullet_consumed, aliens

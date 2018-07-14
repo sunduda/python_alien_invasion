@@ -26,15 +26,16 @@ def run_game():
     game_runs = True
     # The main game process
     while game_runs:
-            gf.check_events(ship)
-            ship.bullet_firing(game_settings, bullets)
-            ship.update()
-            game_runs = game_stats.check_aliens_win(game_settings, ship, aliens)
-            gf.update_screen(game_settings, screen, ship, bullets, aliens, player_score)
+        gf.check_events(ship)
+        ship.bullet_firing(game_settings, bullets)
+        ship.update()
+        game_runs = game_stats.check_aliens_win(game_settings, ship, aliens)
+        gf.update_screen(game_settings, screen, ship, bullets, aliens, player_score)
 
     # If any alien succeeds in invasion, game over
     game_stats.game_over(game_settings)
     pygame.display.flip()
-
+    while not game_runs:
+        gf.check_events()
 #------------------- Main process -----------------------#
 run_game()

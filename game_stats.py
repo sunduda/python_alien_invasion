@@ -7,7 +7,7 @@ class GameStats():
     def __init__(self, game_settings, screen, ship, aliens):
         self.screen = screen
         self.ship_limit = game_settings.ship_limit
-        self.reset_stats()
+        self.reset_stats(game_settings, ship, aliens)
         self.game_active = False
         self.game_over_message = \
                 "Something went wrong, you are not defeated yet"

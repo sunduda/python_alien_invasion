@@ -22,15 +22,18 @@ def check_keyup_events(event, ship):
     if event.key == pygame.K_SPACE:
         ship.open_fire = False
 
-def check_events(ship):
+def check_events(ship = None):
     """ Response to keyboard and mouse events """
     # Supervise the keyboard and mouse events
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             sys.exit()
         if event.type == pygame.KEYDOWN:
-            check_keydown_events(event, ship)
+            if ship != None:
+                check_keydown_events(event, ship)
         if event.type == pygame.KEYUP:
+            if ship == None:
+                sys.exit()
             check_keyup_events(event, ship)
                 
 def update_screen(game_settings, screen, ship, bullets, aliens, player_score):
@@ -42,7 +45,8 @@ def update_screen(game_settings, screen, ship, bullets, aliens, player_score):
         # When a bullet hits an alien, remove both the bullet and the alien
         # from their groups respectively
         # If a bullet is out of the screen, remove it from the group
-        if bullet.hit_the_target(aliens, player_score) or (bullet.y < 0):
+        bullet_consumed, aliens = bullet.hit_the_target(aliens, player_score)
+        if bullet_consumed or (bullet.y < 0):
             bullets.remove(bullet)
     ship.blitme()
     check_fleet_edge(game_settings, screen, aliens)

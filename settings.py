@@ -19,3 +19,4 @@ class Settings():
         self.fleet_speed_factor = 0.010
         self.fleet_drop_factor = 0.5
         self.fleet_moving_direction = 1
+        self.ship_limit = 3

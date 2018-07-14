@@ -23,6 +23,8 @@ class Ship():
         self.lkey_down = False
         self.rkey_down = False
         self.open_fire = False
+        # Player's ship starts from level 1
+        self.level = 1
 
         self.ammo_update()
         
@@ -75,3 +77,6 @@ class Ship():
         self.ammo_count_rect = self.ammo_count_image.get_rect()
         self.ammo_count_rect.left = self.screen.get_rect().left + 20
         self.ammo_count_rect.top = 20
+        
+    #def leveling_up(self, score_board):
+        

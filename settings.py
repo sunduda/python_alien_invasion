@@ -4,6 +4,7 @@ class Settings():
     def __init__(self):
         """ Initialise game settings """
         # Display settings
+        self.game_title = "Alien Invasion"
         self.screen_width = 1120;
         self.screen_height = 630;
         self.bg_colour = (230, 230, 230)

@@ -2,7 +2,23 @@ import sys
 import pygame
 from pygame.sprite import Sprite
 from alien import Alien
-from game_stats import GameStats
+
+def display_title(game_settings, screen, play_button):
+    # Display game title
+    screen.fill(game_settings.bg_colour)
+    title_colour = (100, 100, 100)
+    title_font = pygame.font.SysFont(None, 128)
+    title_image = title_font.render(
+                game_settings.game_title, True,
+                title_colour, game_settings.bg_colour)
+    title_rect = title_image.get_rect()
+    title_rect.centerx = screen.get_rect().centerx
+    title_rect.y = screen.get_rect().height*1/3
+    screen.blit(title_image, title_rect)
+    # Display "Play" button
+    play_button.blitme()
+    pygame.display.flip()
+    
 
 def check_keydown_events(event, ship):
     # When left/right key is pushed, set the flag to True
@@ -22,19 +38,23 @@ def check_keyup_events(event, ship):
     if event.key == pygame.K_SPACE:
         ship.open_fire = False
 
-def check_events(ship = None):
+def check_events(stats, play_button, ship):
     """ Response to keyboard and mouse events """
     # Supervise the keyboard and mouse events
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             sys.exit()
         if event.type == pygame.KEYDOWN:
-            if ship != None:
-                check_keydown_events(event, ship)
+            check_keydown_events(event, ship)
         if event.type == pygame.KEYUP:
-            if ship == None:
-                sys.exit()
-            check_keyup_events(event, ship)
+            if stats.undefeated:
+                check_keyup_events(event, ship)
+            else:
+                stats.game_active = False
+                stats.undefeated = True
+        if event.type == pygame.MOUSEBUTTONUP:
+            mouse_x, mouse_y = pygame.mouse.get_pos()
+            play_button.check_clicked(stats, mouse_x, mouse_y)
                 
 def update_screen(game_settings, screen, ship, bullets, aliens, player_score):
     # Fill the background

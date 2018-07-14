@@ -10,6 +10,7 @@ class GameStats():
         self.ship_limit = game_settings.ship_limit
         self.reset_stats(game_settings, ship, aliens)
         self.game_active = False
+        self.undefeated = True
         self.game_over_message = \
                 "Something went wrong, you are not defeated yet"
 
@@ -53,7 +54,6 @@ class GameStats():
     def check_aliens_win(self, game_settings, ship, aliens):
         """ Check if any alien reaches the bottom of the screen, or bumps into 
             the ship """
-        game_runs = True
         for alien in aliens.sprites():
             if self.ship_remains > 1 and \
                     (alien.rect.bottom >= self.screen.get_rect().bottom or \
@@ -67,7 +67,7 @@ class GameStats():
                     (alien.rect.bottom >= self.screen.get_rect().bottom and \
                     (alien.rect.left >= ship.rect.right or \
                     alien.rect.right <= ship.rect.left)):
-                game_runs = False
+                self.undefeated = False
                 self.game_over_message = \
                         "You failed to protect the Earth from alien invasion"
                 break
@@ -75,19 +75,17 @@ class GameStats():
                     (alien.rect.bottom >= ship.rect.top and \
                     alien.rect.left < ship.rect.right and \
                     alien.rect.right > ship.rect.left):
-                game_runs = False
+                self.undefeated = False
                 self.game_over_message = \
                         "You died and the aliens now take over the Earth"
                 break
-                
-        return game_runs
 
 
     def game_over(self, game_settings):
         gg_colour = (255, 0, 0)
         gom_colour = (200, 0, 100)
-        gg_font = pygame.font.SysFont(None, 128)
-        gom_font = pygame.font.SysFont(None, 64)
+        gg_font = pygame.font.SysFont(None, 64)
+        gom_font = pygame.font.SysFont(None, 48)
         gg_image = gg_font.render(
                 "Game Over!", True,
                 gg_colour, game_settings.bg_colour)

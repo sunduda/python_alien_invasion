@@ -7,6 +7,7 @@ from ship import Ship
 from bullet import Bullet
 from score_board import ScoreBoard
 from game_stats import GameStats
+from button import Button
 import game_functions as gf
 
 def run_game():
@@ -16,26 +17,35 @@ def run_game():
     screen = pygame.display.set_mode(
         (game_settings.screen_width, game_settings.screen_height))
     pygame.display.set_caption("Alien Invasion")
-
+    play_button = Button(game_settings, screen, "Play")
+    
+    # Objects initialization
     ship = Ship(game_settings, screen)
-    player_score = ScoreBoard(game_settings, screen)
     bullets = Group()
     aliens = Group()
-    game_stats = GameStats(game_settings, screen, ship, aliens)
-    game_stats.spawn_alien_fleet(game_settings, aliens)
-    game_runs = True
+    player_score = ScoreBoard(game_settings, screen)
+    stats = GameStats(game_settings, screen, ship, aliens)
+    
     # The main game process
-    while game_runs:
-        gf.check_events(ship)
-        ship.bullet_firing(game_settings, bullets)
-        ship.update()
-        game_runs = game_stats.check_aliens_win(game_settings, ship, aliens)
-        gf.update_screen(game_settings, screen, ship, bullets, aliens, player_score)
+    while True:
+        gf.check_events(stats, play_button, ship)
+        
+        if stats.game_active:
+            ship.update()
+            ship.bullet_firing(game_settings, bullets)
+            stats.check_aliens_win(game_settings, ship, aliens)
+            gf.update_screen(game_settings, screen, ship, bullets, aliens, 
+                player_score)
+        else:
+            gf.display_title(game_settings, screen, play_button)
+        
+        
+        # If any alien succeeds in invasion, game over
+        if not stats.undefeated:
+            stats.game_over(game_settings)
+            pygame.display.flip()
+            while stats.game_active:
+                gf.check_events(stats, play_button, ship)
 
-    # If any alien succeeds in invasion, game over
-    game_stats.game_over(game_settings)
-    pygame.display.flip()
-    while not game_runs:
-        gf.check_events()
 #------------------- Main process -----------------------#
 run_game()

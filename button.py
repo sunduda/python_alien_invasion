@@ -8,8 +8,7 @@ class Button():
         self.text_colour = (255, 255, 255)
         self.font = pygame.font.SysFont(None, 48)
         self.rect = pygame.Rect(0, 0, self.width, self.height)
-        self.rect.centerx = self.screen.get_rect().centerx
-        self.rect.y = self.screen.get_rect().height*2/3
+        self.rect.center = self.screen.get_rect().center
         
         self.prep_msg(msg)
         
@@ -17,13 +16,14 @@ class Button():
         self.msg_image = self.font.render(msg, True, self.text_colour, \
                 self.bg_colour)
         self.msg_image_rect = self.msg_image.get_rect()
-        self.msg_image_rect.centerx = self.screen.get_rect().centerx
-        self.msg_image_rect.y = self.screen.get_rect().height*2/3
     
     def blitme(self):
+        self.msg_image_rect.center = self.rect.center
         self.screen.blit(self.msg_image, self.msg_image_rect)
     
     def check_clicked(self, stats, mouse_x, mouse_y):
         if mouse_x > self.rect.left and mouse_x < self.rect.right and \
                 mouse_y > self.rect.top and mouse_y < self.rect.bottom:
-            stats.game_active = True
+            return True
+        else:
+            return False

@@ -2,19 +2,25 @@ import pygame
 import time
 
 from alien import Alien
+from button import Button
 
 class GameStats():
     """ """
-    def __init__(self, game_settings, screen, ship, aliens, bullets, player_score):
+    def __init__(self, game_settings, screen, ship, aliens, bullets, 
+            player_score):
         self.screen = screen
+        self.settings = game_settings
         self.ship_limit = game_settings.ship_limit
-        self.reset_stats(game_settings, ship, aliens, bullets, player_score)
+        self.reset_stats(game_settings, ship, aliens, bullets, 
+                player_score)
         self.game_active = False
         self.undefeated = True
+        self.paused = False
         self.game_over_message = \
                 "Something went wrong, you are not defeated yet"
 
-    def reset_stats(self, game_settings, ship, aliens, bullets, player_score):
+    def reset_stats(self, game_settings, ship, aliens, bullets, 
+            player_score):
         self.ship_remains = self.ship_limit
         ship.ship_reset(game_settings)
         player_score.score_reset()
@@ -23,6 +29,13 @@ class GameStats():
         self.spawn_alien_fleet(game_settings, aliens)
         self.game_over_message = \
                 "Something went wrong, you are not defeated yet"
+        self.paused = False
+
+    def blitme(self):
+        self.screen.blit(self.pbg_mask, self.pbg_mask_rect)
+        self.resume_button.blitme()
+        self.mm_button.blitme()
+        self.quit_button.blitme()
         
     def lose_a_ship(self, game_settings, ship, aliens):
         ship.rect.bottom = self.screen.get_rect().bottom
@@ -58,32 +71,32 @@ class GameStats():
                 aliens.add(new_alien)
 
     def check_aliens_win(self, game_settings, ship, aliens):
-        """ Check if any alien reaches the bottom of the screen, or bumps into 
-            the ship """
+        # Check if any alien reaches the bottom of the screen, or bumps 
+        # into the ship
         for alien in aliens.sprites():
             if self.ship_remains > 1 and \
-                    (alien.rect.bottom >= self.screen.get_rect().bottom or \
-                    (alien.rect.bottom >= ship.rect.top and \
+                    (alien.rect.bottom >= self.screen.get_rect().bottom\
+                     or (alien.rect.bottom >= ship.rect.top and \
                     alien.rect.left < ship.rect.right and \
                     alien.rect.right > ship.rect.left)):
                 self.ship_remains -= 1
                 self.lose_a_ship(game_settings, ship, aliens)
                 break
             elif self.ship_remains <= 1 and \
-                    (alien.rect.bottom >= self.screen.get_rect().bottom and \
-                    (alien.rect.left >= ship.rect.right or \
+                    (alien.rect.bottom >= self.screen.get_rect().bottom\
+                     and (alien.rect.left >= ship.rect.right or \
                     alien.rect.right <= ship.rect.left)):
                 self.undefeated = False
-                self.game_over_message = \
-                        "You failed to protect the Earth from alien invasion"
+                self.game_over_message = "You failed to protect the" \
+                        " Earth from alien invasion"
                 break
             elif self.ship_remains <= 1 and \
                     (alien.rect.bottom >= ship.rect.top and \
                     alien.rect.left < ship.rect.right and \
                     alien.rect.right > ship.rect.left):
                 self.undefeated = False
-                self.game_over_message = \
-                        "You died and the aliens now take over the Earth"
+                self.game_over_message = "You died and aliens now" \
+                        " take over the Earth"
                 break
 
 
@@ -106,3 +119,31 @@ class GameStats():
         gom_rect.y += gom_rect.height /2
         self.screen.blit(gg_image, gg_rect)
         self.screen.blit(gom_image, gom_rect)
+
+    def game_pause(self):
+        screen_width = self.screen.get_rect().width
+        screen_height = self.screen.get_rect().height
+        screen_y = self.screen.get_rect().centery
+        self.pbg_mask = pygame.Surface([screen_width, screen_height], \
+                pygame.SRCALPHA, 32)
+        self.pbg_mask.convert_alpha()
+        self.pbg_mask.fill((100,100,100,128))
+        self.pbg_mask_rect = self.pbg_mask.get_rect()
+        self.pbg_mask_rect.center = self.screen.get_rect().center
+        self.resume_button = \
+                Button(self.settings, self.screen, "Resume")
+        self.mm_button = \
+                Button(self.settings, self.screen, "Main Menu")
+        self.quit_button = \
+                Button(self.settings, self.screen, "Quit")
+        
+        rb_height = self.resume_button.rect.height
+        mmb_height = self.mm_button.rect.height
+        qb_height = self.quit_button.rect.height
+        
+        
+        self.resume_button.rect.centery = \
+                screen_y - mmb_height/2 - 10 - rb_height/2
+        self.mm_button.rect.centery = self.screen.get_rect().centery
+        self.quit_button.rect.centery = \
+                screen_y + mmb_height/2 + 10 + qb_height/2

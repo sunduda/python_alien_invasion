@@ -22,9 +22,10 @@ class Bullet(Sprite):
         # Move the bullet upwards
         self.y -= self.speed_factor
         self.rect.y = self.y
-        # Draw the bullet on the screen
+        
+    def blitme(self):
         pygame.draw.rect(self.screen, self.colour, self.rect)
-
+    
     def hit_the_target(self, aliens, player_score):
         # Check if the bullet hits (an) alien(s)
         bullet_consumed = False

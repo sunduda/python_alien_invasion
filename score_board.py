@@ -12,6 +12,7 @@ class ScoreBoard():
 
     def score_reset(self):
         self.score = 0
+        self.update()
         
     def update(self, alien = None):
         if alien != None:

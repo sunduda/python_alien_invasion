@@ -1,5 +1,6 @@
 import sys
 import pygame
+import time
 from pygame.sprite import Group
 
 from settings import Settings
@@ -38,13 +39,19 @@ def run_game():
                 pygame.mouse.set_visible(True)
             else:
                 ship.update()
-                ship.bullet_firing(game_settings, bullets)
+                if aliens:
+                    ship.bullet_firing(game_settings, bullets)
                 bullets.update()
-                gf.check_fleet_edge(game_settings, screen, aliens)
-                aliens.update()
-                stats.check_aliens_win(game_settings, ship, aliens)
+                gf.enemy_neutralized(game_settings, stats, ship, aliens, bullets, player_score)
+                if aliens:
+                    gf.check_fleet_edge(game_settings, screen, aliens)
+                    aliens.update()
+                    stats.check_aliens_win(game_settings, ship, aliens)
             gf.update_screen(game_settings, screen, stats, ship, bullets, aliens, 
                     player_score)
+            if (not aliens) and (not bullets):
+                stats.speed_increase(game_settings, ship, aliens)
+                time.sleep(0.5)
         else:
             pygame.mouse.set_visible(True)
             gf.display_title(game_settings, screen, play_button, 

@@ -82,24 +82,17 @@ def check_events(game_settings, stats, play_button, quit_button, ship,
 def update_screen(game_settings, screen, stats, ship, bullets, aliens, player_score):
     # Fill the background
     screen.fill(game_settings.bg_colour)
-    for bullet in bullets.sprites():
-        # When a bullet hits an alien, remove both the bullet and the alien
-        # from their groups respectively
-        # If a bullet is out of the screen, remove it from the group
-        bullet_consumed, aliens = bullet.hit_the_target(aliens, player_score)
-        if bullet_consumed or (bullet.y < 0):
-            bullets.remove(bullet)
     ship.blitme()
     for bullet in bullets.sprites():
         bullet.blitme()
     
     for alien in aliens.sprites():
         alien.blitme()
-
-    player_score.blitme()
     
     if stats.paused:
         stats.blitme()
+        
+    player_score.blitme()
     
     # Display the screen
     pygame.display.flip()
@@ -116,4 +109,13 @@ def fleet_drop(game_settings, aliens):
     for alien in aliens.sprites():
         alien.y += alien.rect.height*game_settings.fleet_drop_factor
         alien.rect.y = alien.y
+        
+def enemy_neutralized(game_settings, stats, ship, aliens, bullets, player_score):
+    for bullet in bullets.sprites():
+        # When a bullet hits an alien, remove both the bullet and the alien
+        # from their groups respectively
+        # If a bullet is out of the screen, remove it from the group
+        bullet_consumed, aliens = bullet.hit_the_target(aliens, player_score)
+        if bullet_consumed or (bullet.y < 0):
+            bullets.remove(bullet)
 

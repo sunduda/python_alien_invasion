@@ -16,11 +16,13 @@ class GameStats():
         self.game_active = False
         self.undefeated = True
         self.paused = False
+        self.speed_incr_factor = game_settings.speed_incr_factor
         self.game_over_message = \
                 "Something went wrong, you are not defeated yet"
 
     def reset_stats(self, game_settings, ship, aliens, bullets, 
             player_score):
+        game_settings.dynamic_initialize()
         self.ship_remains = self.ship_limit
         ship.ship_reset(game_settings)
         player_score.score_reset()
@@ -147,3 +149,8 @@ class GameStats():
         self.mm_button.rect.centery = self.screen.get_rect().centery
         self.quit_button.rect.centery = \
                 screen_y + mmb_height/2 + 10 + qb_height/2
+    
+    def speed_increase(self, game_settings, ship, aliens):
+        game_settings.dynamic_change()
+        self.spawn_alien_fleet(game_settings, aliens)
+        ship.speed_factor = game_settings.ship_speed_factor

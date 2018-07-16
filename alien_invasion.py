@@ -1,5 +1,6 @@
 import sys
 import pygame
+import time
 from pygame.sprite import Group
 
 from settings import Settings
@@ -7,6 +8,7 @@ from ship import Ship
 from bullet import Bullet
 from score_board import ScoreBoard
 from game_stats import GameStats
+from button import Button
 import game_functions as gf
 
 def run_game():
@@ -16,26 +18,55 @@ def run_game():
     screen = pygame.display.set_mode(
         (game_settings.screen_width, game_settings.screen_height))
     pygame.display.set_caption("Alien Invasion")
-
+    play_button = Button(game_settings, screen, "Play")
+    quit_button = Button(game_settings, screen, "Quit")
+    
+    # Objects initialization
     ship = Ship(game_settings, screen)
-    player_score = ScoreBoard(game_settings, screen)
     bullets = Group()
     aliens = Group()
-    game_stats = GameStats(game_settings, screen, ship, aliens)
-    game_stats.spawn_alien_fleet(game_settings, aliens)
-    game_runs = True
+    player_score = ScoreBoard(game_settings, screen)
+    stats = GameStats(game_settings, screen, ship, aliens, bullets, player_score)
+    
     # The main game process
-    while game_runs:
-        gf.check_events(ship)
-        ship.bullet_firing(game_settings, bullets)
-        ship.update()
-        game_runs = game_stats.check_aliens_win(game_settings, ship, aliens)
-        gf.update_screen(game_settings, screen, ship, bullets, aliens, player_score)
+    while True:
+        gf.check_events(game_settings, stats, play_button, quit_button, 
+                ship, aliens, bullets, player_score)
+        
+        if stats.game_active:
+            pygame.mouse.set_visible(False)
+            if stats.paused:
+                pygame.mouse.set_visible(True)
+            else:
+                ship.update()
+                if aliens:
+                    ship.bullet_firing(game_settings, bullets)
+                bullets.update()
+                gf.enemy_neutralized(game_settings, stats, ship, aliens, bullets, player_score)
+                if aliens:
+                    gf.check_fleet_edge(game_settings, screen, aliens)
+                    aliens.update()
+                    stats.check_aliens_win(game_settings, ship, aliens)
+            gf.update_screen(game_settings, screen, stats, ship, bullets, aliens, 
+                    player_score)
+            if (not aliens) and (not bullets):
+                stats.speed_increase(game_settings, ship, aliens)
+                time.sleep(0.5)
+        else:
+            pygame.mouse.set_visible(True)
+            gf.display_title(game_settings, screen, play_button, 
+                    quit_button)
+        
+        
+        # If any alien succeeds in invasion, game over
+        if not stats.undefeated:
+            stats.game_over(game_settings)
+            pygame.display.flip()
+            while stats.game_active:
+                gf.check_events(game_settings, stats, play_button, 
+                        quit_button, ship, aliens, bullets, 
+                        player_score)
+                stats.reset_stats(game_settings, ship, aliens, bullets, player_score)
 
-    # If any alien succeeds in invasion, game over
-    game_stats.game_over(game_settings)
-    pygame.display.flip()
-    while not game_runs:
-        gf.check_events()
 #------------------- Main process -----------------------#
 run_game()

@@ -6,6 +6,15 @@ class Ship():
     """ Draw and operate player's ship """
     def __init__(self, game_settings, screen):
         self.screen = screen
+        self.ship_reset(game_settings)
+        # Initialise the moving flag
+        self.lkey_down = False
+        self.rkey_down = False
+        self.open_fire = False
+
+        self.ammo_update()
+    
+    def ship_reset(self, game_settings):
         # Game settings related with the ship
         self.speed_factor = game_settings.ship_speed_factor
         self.ammo_capacity = game_settings.ammo_capacity
@@ -19,12 +28,8 @@ class Ship():
         # Put the new ship at the centre-bottom of the screen
         self.rect.centerx = self.screen.get_rect().centerx
         self.rect.bottom = self.screen.get_rect().bottom
-        # Initialise the moving flag
-        self.lkey_down = False
-        self.rkey_down = False
-        self.open_fire = False
-
-        self.ammo_update()
+        # Player's ship starts from level 1
+        self.level = 1
         
     def blitme(self):
         # Draw the ship at the assigned position
@@ -75,3 +80,6 @@ class Ship():
         self.ammo_count_rect = self.ammo_count_image.get_rect()
         self.ammo_count_rect.left = self.screen.get_rect().left + 20
         self.ammo_count_rect.top = 20
+        
+    #def leveling_up(self, player_score):
+        
